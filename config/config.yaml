@@ -1,0 +1,19 @@
+mode: release # debug, release
+
+server:
+  address: :8080
+
+logging:
+  level: info
+  # path: 
+
+tracing: # jaeger, stdout
+  output: jaeger 
+  name: song-service-tracer
+  endpoint: jaeger:4318
+
+  # output: stdout 
+
+music_service:
+  address: http://localhost:8081
+  timeout: 5s

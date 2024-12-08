@@ -1,0 +1,348 @@
+basePath: /
+definitions:
+  handlers.CreateSongRequest:
+    properties:
+      group:
+        type: string
+      song:
+        type: string
+    required:
+    - group
+    - song
+    type: object
+  handlers.CreateSongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/models.Song'
+    type: object
+  handlers.DeleteSongResponse:
+    properties:
+      deleted_time:
+        type: string
+    type: object
+  handlers.PartialUpdateSongRequest:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      release_date:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+  handlers.PartialUpdateSongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/models.Song'
+    type: object
+  handlers.SongListResponse:
+    properties:
+      song_list:
+        items:
+          $ref: '#/definitions/models.Song'
+        type: array
+    type: object
+  handlers.SongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/models.Song'
+    type: object
+  handlers.UpdateSongRequest:
+    properties:
+      group:
+        type: string
+      link:
+        type: string
+      release_date:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    required:
+    - group
+    - link
+    - release_date
+    - song
+    - text
+    type: object
+  handlers.UpdateSongResponse:
+    properties:
+      song:
+        $ref: '#/definitions/models.Song'
+    type: object
+  models.Song:
+    properties:
+      group:
+        type: string
+      id:
+        type: string
+      link:
+        type: string
+      release_date:
+        type: string
+      song:
+        type: string
+      text:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  title: Song Service API
+  version: "1.0"
+paths:
+  /songs:
+    get:
+      consumes:
+      - application/json
+      description: Получение списка песен с фильтрацией по всем полям и пагинацией
+      parameters:
+      - description: Name of song
+        in: query
+        name: song
+        type: string
+      - description: Group name of song
+        in: query
+        name: group
+        type: string
+      - description: Start date for release date filter
+        example: '"2020-01-01"'
+        in: query
+        name: release_date_from
+        type: string
+      - description: End date for release date filter
+        example: '"2023-01-01"'
+        in: query
+        name: release_date_to
+        type: string
+      - description: Text content of the song
+        in: query
+        name: text
+        type: string
+      - description: URL link for the song
+        in: query
+        name: link
+        type: string
+      - default: 10
+        description: Limit of songs
+        in: query
+        name: limit
+        type: integer
+      - default: 0
+        description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SongListResponse'
+        "400":
+          description: Invalid query parameters
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get songs list
+      tags:
+      - songs
+    post:
+      consumes:
+      - application/json
+      description: Добавление песни в библиотеку из Music Service
+      parameters:
+      - description: Song details
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.CreateSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.CreateSongResponse'
+        "400":
+          description: Invalid input data
+          schema:
+            type: string
+        "409":
+          description: Song already exists
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Add song from Music Service
+      tags:
+      - songs
+  /songs/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Удаление песни из библиотеки по ID
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.DeleteSongResponse'
+        "400":
+          description: Invalid ID format
+          schema:
+            type: string
+        "404":
+          description: Song not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Delete song by ID
+      tags:
+      - songs
+    get:
+      consumes:
+      - application/json
+      description: Получение песни с пагинацией по куплетам
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Limit number of verses
+        in: query
+        name: limit
+        type: integer
+      - description: Offset for pagination
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.SongResponse'
+        "400":
+          description: Invalid ID format
+          schema:
+            type: string
+        "404":
+          description: Song not found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get song
+      tags:
+      - songs
+    patch:
+      consumes:
+      - application/json
+      description: Частичное обновление информации о песне в библиотеке
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Song details to be updated
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.PartialUpdateSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.PartialUpdateSongResponse'
+        "400":
+          description: Invalid input data
+          schema:
+            type: string
+        "404":
+          description: Song not found
+          schema:
+            type: string
+        "409":
+          description: Name conflict
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Partially update song by ID
+      tags:
+      - songs
+    put:
+      consumes:
+      - application/json
+      description: Полное обновление информации о песне в библиотеке
+      parameters:
+      - description: Song ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Song details to update
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.UpdateSongRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.UpdateSongResponse'
+        "400":
+          description: Invalid input data
+          schema:
+            type: string
+        "404":
+          description: Song not found
+          schema:
+            type: string
+        "409":
+          description: Name conflict
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Update song by ID
+      tags:
+      - songs
+swagger: "2.0"
