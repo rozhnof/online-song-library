@@ -15,5 +15,5 @@ tracing: # jaeger, stdout
   # output: stdout 
 
 music_service:
-  address: http://localhost:8081
+  address: 
   timeout: 5s
