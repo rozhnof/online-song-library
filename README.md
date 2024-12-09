@@ -13,7 +13,7 @@
 1. Задайте адрес Music Service в конфиге
     ```yaml
     music_service:
-        address: http://localhost:8081
+        address: http://host.docker.internal:8081
     ```
 
 1. Установите необходимые переменные среды:
