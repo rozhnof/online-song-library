@@ -26,27 +26,27 @@ func NewSongClient(client *http.Client, baseURL string) *SongServiceClient {
 }
 
 func (c *SongServiceClient) CreateSong(request CreateSongRequest, queryParams any) (*CreateSongResponse, int, error) {
-	return makeRequest[CreateSongRequest, CreateSongResponse](c.client, baseURL, "/songs", http.MethodPost, &request, queryParams)
+	return makeRequest[CreateSongRequest, CreateSongResponse](c.client, c.baseURL, "/songs", http.MethodPost, &request, queryParams)
 }
 
 func (c *SongServiceClient) UpdateSong(id uuid.UUID, request UpdateSongRequest, queryParams any) (*UpdateSongResponse, int, error) {
-	return makeRequest[UpdateSongRequest, UpdateSongResponse](c.client, baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodPut, &request, queryParams)
+	return makeRequest[UpdateSongRequest, UpdateSongResponse](c.client, c.baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodPut, &request, queryParams)
 }
 
 func (c *SongServiceClient) PartialUpdateSong(id uuid.UUID, request UpdateSongRequest, queryParams any) (*UpdateSongResponse, int, error) {
-	return makeRequest[UpdateSongRequest, UpdateSongResponse](c.client, baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodPatch, &request, queryParams)
+	return makeRequest[UpdateSongRequest, UpdateSongResponse](c.client, c.baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodPatch, &request, queryParams)
 }
 
 func (c *SongServiceClient) DeleteSong(id uuid.UUID, queryParams any) (*DeleteSongResponse, int, error) {
-	return makeRequest[struct{}, DeleteSongResponse](c.client, baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodDelete, nil, queryParams)
+	return makeRequest[struct{}, DeleteSongResponse](c.client, c.baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodDelete, nil, queryParams)
 }
 
 func (c *SongServiceClient) GetSong(id uuid.UUID, queryParams any) (*SongResponse, int, error) {
-	return makeRequest[struct{}, SongResponse](c.client, baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodGet, nil, queryParams)
+	return makeRequest[struct{}, SongResponse](c.client, c.baseURL, fmt.Sprintf("/songs/%s", id.String()), http.MethodGet, nil, queryParams)
 }
 
 func (c *SongServiceClient) ListSong(queryParams any) (*ListSongResponse, int, error) {
-	return makeRequest[struct{}, ListSongResponse](c.client, baseURL, "/songs", http.MethodGet, nil, queryParams)
+	return makeRequest[struct{}, ListSongResponse](c.client, c.baseURL, "/songs", http.MethodGet, nil, queryParams)
 }
 
 func makeRequest[Req any, Resp any](client *http.Client, baseURL string, endpoint string, method string, request *Req, queryParams any) (*Resp, int, error) {
