@@ -15,5 +15,5 @@ tracing: # jaeger, stdout
   output: stdout 
 
 music_service:
-  address: http://localhost:9091
+  address: http://host.docker.internal:9091
   timeout: 5s
