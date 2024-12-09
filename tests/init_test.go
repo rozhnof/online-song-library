@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"song-service/internal/infrastructure/database/postgres"
 	"song-service/internal/pkg/config"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/hardfinhq/go-date"
@@ -13,13 +14,17 @@ import (
 
 const (
 	configPath = "../config/test-config.yaml"
-	baseURL    = "http://localhost:9090"
 )
 
 var (
 	songServiceDB     SongServiceDatabase
 	musicService      *MockMusicService
 	songServiceClient *SongServiceClient
+)
+
+const (
+	songServiceTimeout = time.Second * 5
+	songServiceAddress = "http://localhost:9090"
 )
 
 type Config struct {
@@ -46,11 +51,19 @@ func init() {
 		log.Fatal(err)
 	}
 
+	httpClient := &http.Client{
+		Timeout: songServiceTimeout,
+	}
+
 	songServiceDB = *NewSongServiceDatabase(database)
-	songServiceClient = NewSongClient(http.DefaultClient, baseURL)
+	songServiceClient = NewSongClient(httpClient, songServiceAddress)
 	musicService = NewMockMusicService()
 
 	go musicService.Run()
+
+	if err := musicService.waitForServer(time.Second*10, time.Second); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func SetUpEmpty() error {
